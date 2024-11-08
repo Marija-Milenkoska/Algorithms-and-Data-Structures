@@ -1,0 +1,44 @@
+//Дадени се N точки (N >= 2) во дводимензионален простор. Пресметајте кое е најмалото растојание помеѓу две точки.
+
+import java.util.Scanner;
+
+class Point{
+    int x;
+    int y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        Point [] tocki = new Point[n];
+        for (int i=0; i<n; i++){
+            int x = scanner.nextInt();
+            int y = scanner.nextInt();
+            tocki[i] = new Point(x,y);
+        }
+        System.out.println(minRatojanie(tocki,n));
+
+    }
+
+    static double evkalidovoRastojanie(Point a, Point b){
+        return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+    }
+    static double minRatojanie(Point [] tocki, int n){     //(1, 3) (2,1), (8, 3), (4,1)
+        double min = 100000;
+        for(int i=0; i<n; i++){
+            for(int j=i+1; j<n; j++){
+                if(evkalidovoRastojanie(tocki[i], tocki[j]) < min){
+                    min = evkalidovoRastojanie(tocki[i], tocki[j]);
+                }
+            }
+        }
+        return min;
+    }
+}
+
