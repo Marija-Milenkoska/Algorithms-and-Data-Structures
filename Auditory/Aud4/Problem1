@@ -1,0 +1,48 @@
+//Да се пресметаат биномните коефициенти на полином со степен n со помош на Паскаловиот триаголник 
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        Triangle(n);
+    }
+    static void Triangle(int n){
+        int iterator = 1;
+        int [] niza = new  int[n];
+        int num=1;
+        for(int i=0; i<n; i++){
+            niza[i] = num;
+            num++;
+        }
+
+        if(n==1){
+            System.out.println(1);
+            return;
+        }
+       // while(iterator!=n) {
+            int[] newTMPniza = new int[n*25];
+            while (iterator - 1 <= n) {              //n=5        1 2 3 4 5
+                int[] tmpNiza = new int[iterator];
+                tmpNiza[0] = 1;
+                tmpNiza[iterator - 1] = 1;
+                for (int i = 1; i < iterator - 1; i++) {
+                    if (iterator == 3) {
+                        tmpNiza[i] = 2;
+                    } else {
+                        tmpNiza[i] = newTMPniza[i - 1] + newTMPniza[i];
+                    }
+                }
+                for (int j = 0; j < iterator; j++) {
+                    System.out.print(tmpNiza[j] + " ");
+                    newTMPniza[j] = tmpNiza[j];
+                }
+                System.out.println();
+                if (iterator == 1) {
+                    iterator = 2;
+                }
+                iterator++;
+            }
+        //}
+    }
+}
