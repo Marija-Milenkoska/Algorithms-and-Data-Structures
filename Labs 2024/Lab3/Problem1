@@ -1,0 +1,29 @@
+//Дадени се Н цифри. Да се напише алгоритам кој ќе го даде најголемиот можен број составен од тие цифри.
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        int [] niza = new int[n];
+        for(int i=0; i<n; i++){
+            niza[i] = scanner.nextInt();
+        }
+        biggestNum(niza, n);
+    }
+    static void biggestNum(int[] niza, int n){
+        for(int i=0; i<n; i++){
+            for(int j=i+1; j<n; j++){
+                if(niza[i]<niza[j]){
+                    int tmp = niza[i];
+                    niza[i] = niza[j];
+                    niza[j] = tmp;
+                }
+            }
+        }
+        for(int i=0; i<n; i++){
+            System.out.print(niza[i]);
+        }
+    }
+}
