@@ -1,29 +1,110 @@
-//Дадени се Н цифри. Да се напише алгоритам кој ќе го даде најголемиот можен број составен од тие цифри.
+//За дадена двојно поврзана листа од N цели броеви, треба да се најде бројот на елементи такви што просекот на елементите од пред него во 
+//листата е поголем од просекот на елементи после него во листата.
 
 import java.util.Scanner;
+
+class DLLNode<E> {
+    protected E element;
+    protected DLLNode<E> pred, succ;
+
+    public DLLNode(E elem, DLLNode<E> pred, DLLNode<E> succ) {
+        this.element = elem;
+        this.pred = pred;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+class DLL<E> {
+    private DLLNode<E> first, last;
+
+    public DLL() {
+        this.first = null;
+        this.last = null;
+    }
+
+    public void insertFirst(E o) {
+        DLLNode<E> ins = new DLLNode<E>(o, null, first);
+        if (first == null)
+            last = ins;
+        else
+            first.pred = ins;
+        first = ins;
+    }
+
+    public void insertLast(E o) {
+        if (first == null)
+            insertFirst(o);
+        else {
+            DLLNode<E> ins = new DLLNode<E>(o, last, null);
+            last.succ = ins;
+            last = ins;
+        }
+    }
+
+    public int countElements() {
+        int count = 0;
+        DLLNode<E> current = first.succ;
+        while (current != last) {
+            double leftSum = 0;
+            int leftCount = 0;
+            DLLNode<E> leftNode = current.pred;
+
+            while (leftNode != null) {
+                leftSum += ((Number) leftNode.element).doubleValue();
+                leftCount++;
+                leftNode = leftNode.pred;
+            }
+            double leftAvg;
+            if (leftCount > 0) {
+                leftAvg = leftSum / leftCount;
+            } else {
+                leftAvg = 0;
+            }
+
+            double rightSum = 0;
+            int rightCount = 0;
+            DLLNode<E> rightNode = current.succ;
+
+            while (rightNode != null) {
+                rightSum += ((Number) rightNode.element).doubleValue();
+                rightCount++;
+                rightNode = rightNode.succ;
+            }
+            double rightAvg;
+            if (rightCount > 0) {
+                rightAvg = rightSum / rightCount;
+            } else {
+                rightAvg = 0;
+            }
+
+            if (leftAvg > rightAvg) {
+                count++;
+            }
+
+            current = current.succ;
+        }
+        return count;
+    }
+}
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-        int [] niza = new int[n];
-        for(int i=0; i<n; i++){
-            niza[i] = scanner.nextInt();
+        int N = scanner.nextInt();
+        DLL<Integer> list = new DLL<>();
+
+        for (int i = 0; i < N; i++) {
+            list.insertLast(scanner.nextInt());
         }
-        biggestNum(niza, n);
-    }
-    static void biggestNum(int[] niza, int n){
-        for(int i=0; i<n; i++){
-            for(int j=i+1; j<n; j++){
-                if(niza[i]<niza[j]){
-                    int tmp = niza[i];
-                    niza[i] = niza[j];
-                    niza[j] = tmp;
-                }
-            }
-        }
-        for(int i=0; i<n; i++){
-            System.out.print(niza[i]);
-        }
+
+        int result = list.countElements();
+        System.out.println(result);
+
+        scanner.close();
     }
 }
