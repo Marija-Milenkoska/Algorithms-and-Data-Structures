@@ -1,0 +1,71 @@
+//За дадена низа од N цели броеви, да се избришат елементите со вредност помала од просекот на сите елементи во низата. На пример за низата 1, 2, 3, 4, 5 просекот е
+//(1 + 2 + 3 + 4 + 5) / 5 = 15 / 5 = 3, што значи треба да се избришат елементите 1 и 2, што значи низата после оваа трансформација ќе биде 3, 4, 5
+
+import java.util.Scanner;
+
+public class Main{
+    public static void main(String [] args){
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+
+        int [] arr = new int[n];
+
+        for(int i=0; i<n; i++){
+            arr[i] = scanner.nextInt();
+        }
+
+        System.out.print("{");
+        for(int i=0; i<n; i++){
+            System.out.print(arr[i]);
+            if(i==n-1){
+                break;
+            }
+            System.out.print(",");
+        }
+        System.out.println("}");
+
+        int [] resultArray = deleteElementsBellowAverage(arr, n);
+
+        //System.out.println("Transformirana niza: ");
+        System.out.print("{");
+        int len = resultArray.length;
+        for(int i=0; i<len; i++){
+            System.out.print(resultArray[i]);
+            if(i==len-1){
+                break;
+            }
+            System.out.print(",");
+
+        }
+        System.out.print("}");
+
+    }
+
+    static double Average(int arr[], int n){
+        int sum=0;
+        for(int i=0; i<n; i++){
+            sum+=arr[i];
+        }
+       return (double) sum/n;
+    }
+    static int[] deleteElementsBellowAverage(int arr[], int n){
+        double average = Average(arr, n);
+        int count = 0;
+        for(int i=0; i<n; i++){
+            if(arr[i] >= average){
+                count++;
+            }
+        }
+
+        int [] resultArray = new int[count];
+
+        int j=0;
+        for(int i=0; i<n; i++){
+            if(arr[i] >= average){
+                resultArray[j] = arr[i];
+                j++;
+            }
+        }
+        return resultArray;
+    }
+}
