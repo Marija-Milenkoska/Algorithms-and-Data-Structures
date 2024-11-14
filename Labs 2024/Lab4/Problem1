@@ -1,0 +1,38 @@
+//Дадена е сортирана низа од N броеви и број М кој го бараме во таа низа. Со помош на методата „раздели па владеј“ да се имплементира бинарно пребарување, 
+//да се најде бараниот број во таа низа и да се испечати неговата позиција. Доколку бројот не е во низата да е испечати "Ne postoi".
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        int m = scanner.nextInt();
+        
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = scanner.nextInt();
+        }
+        int ind = findIndex(arr, 0, n - 1, m);
+        if (ind == -1) {
+            System.out.println("Ne postoi");
+        } else {
+            System.out.println(ind);
+        }
+    }
+    public static int findIndex(int [] arr, int left, int right, int m) {
+        if (left <= right) {
+            int mid = left + (right - left) / 2; 
+            
+            if (arr[mid] == m) {
+                return mid;
+            }
+            
+            if (arr[mid] > m) {
+                return findIndex(arr, left, mid - 1, m);
+            }
+            return findIndex(arr, mid + 1, right, m);
+        }
+        return -1;
+    }
+}
