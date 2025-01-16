@@ -1,0 +1,190 @@
+//Radar
+
+import java.util.Scanner;
+import java.util.*;
+
+class SLLNode<E> {
+    protected E element;
+    protected SLLNode<E> succ;
+
+    public SLLNode(E elem, SLLNode<E> succ) {
+        this.element = elem;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+class CBHT<K extends Comparable<K>, E> {
+
+    // An object of class CBHT is a closed-bucket hash table, containing
+    // entries of class MapEntry.
+    private SLLNode<MapEntry<K, E>>[] buckets;
+
+    @SuppressWarnings("unchecked")
+    public CBHT(int m) {
+        // Construct an empty CBHT with m buckets.
+        buckets = (SLLNode<MapEntry<K, E>>[]) new SLLNode[m];
+    }
+
+    private int hash(K key) {
+        // Translate key to an index of the array buckets.
+        return Math.abs(key.hashCode()) % buckets.length;
+    }
+
+    public SLLNode<MapEntry<K, E>> search(K targetKey) {
+        // Find which if any node of this CBHT contains an entry whose key is equal to targetKey.
+        // Return a link to that node (or null if there is none).
+        int b = hash(targetKey);
+        SLLNode<MapEntry<K, E>> currNode = buckets[b];
+        while (currNode != null) {
+            MapEntry<K, E> currEntry = currNode.element;
+            if (currEntry.key.equals(targetKey)) return currNode;
+            else currNode = currNode.succ;
+        }
+        return null;
+    }
+
+    public void insert(K key, E val) {
+        // Insert the entry <key, val> into this CBHT.
+        // If entry with same key exists, overwrite it.
+        MapEntry<K, E> newEntry = new MapEntry<>(key, val);
+        int b = hash(key);
+        SLLNode<MapEntry<K, E>> currNode = buckets[b];
+        while (currNode != null) {
+            MapEntry<K, E> currEntry = currNode.element;
+            if (currEntry.key.equals(key)) {
+                // Make newEntry replace the existing entry ...
+                currNode.element = newEntry;
+                return;
+            } else currNode = currNode.succ;
+        }
+        // Insert newEntry at the front of the SLL in bucket b ...
+        buckets[b] = new SLLNode<>(newEntry, buckets[b]);
+    }
+
+    public void delete(K key) {
+        // Delete the entry (if any) whose key is equal to key from this CBHT.
+        int b = hash(key);
+        SLLNode<MapEntry<K, E>> predNode = null, currNode = buckets[b];
+        while (currNode != null) {
+            MapEntry<K, E> currEntry = currNode.element;
+            if (currEntry.key.equals(key)) {
+                if (predNode == null) buckets[b] = currNode.succ;
+                else predNode.succ = currNode.succ;
+                return;
+            } else {
+                predNode = currNode;
+                currNode = currNode.succ;
+            }
+        }
+    }
+
+    public String toString() {
+        String temp = "";
+        for (int i = 0; i < buckets.length; i++) {
+            SLLNode<MapEntry<K, E>> curr = buckets[i];
+            while (curr != null) {
+                temp += curr.element.toString() + " ";
+                curr = curr.succ;
+                temp += "\n";
+            }
+            //temp += "\n";
+        }
+        return temp;
+    }
+    public SLLNode<MapEntry<K, E>>[] getBuckets() {
+        return buckets;
+    }
+
+}
+class MapEntry<K extends Comparable<K>, E> {
+    // Each MapEntry object is a pair consisting of a key (a Comparable object)
+    // and a value (an arbitrary object).
+    K key;
+    E value;
+
+    public MapEntry(K key, E val) {
+        this.key = key;
+        this.value = val;
+    }
+
+    public String toString() {
+        return  key + " = " + value;
+    }
+}
+class VehicleRecord implements Comparable<VehicleRecord>{
+    String owner;
+    String time;
+
+    public VehicleRecord(String owner, String time) {
+        this.owner = owner;
+        this.time = time;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public String getTime() {
+        return time;
+    }
+    @Override
+    public int compareTo(VehicleRecord other) {
+        return this.time.compareTo(other.time); // Сортирање според време
+    }
+
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        scanner.nextLine();
+        CBHT<String,String> hash = new CBHT<>(n*2);
+        for(int i=0; i<n; i++){
+            String tablica = scanner.next();
+            String name = scanner.next();
+            String surname = scanner.next();
+            hash.insert(tablica, name + " " + surname);
+
+        }
+        int speedLimit = scanner.nextInt();
+        scanner.nextLine();
+
+        List<VehicleRecord> violators = new ArrayList<>();
+
+        String radarRecord = scanner.nextLine();
+        String [] radarParts = radarRecord.split(" ");
+        for(int i=0; i<radarParts.length-2; i+=3){
+            String tablica = radarParts[i];
+            String speed = radarParts[i+1];
+            String time = radarParts[i+2];
+
+            if(speedLimit < Integer.parseInt(speed)){
+                SLLNode<MapEntry<String, String>> exists = hash.search(tablica);
+                if(exists!=null){
+                    violators.add(new VehicleRecord(exists.element.value, time));
+                }
+            }
+        }
+        Collections.sort(violators);
+
+        for(VehicleRecord record: violators){
+            System.out.println(record.getOwner());
+        }
+
+
+    }
+}
