@@ -1,0 +1,109 @@
+//Koj e roden vo ist mesec
+
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.*;
+
+class SLLNode<E> {
+    protected E element;
+    protected SLLNode<E> succ;
+
+    public SLLNode(E elem, SLLNode<E> succ) {
+        this.element = elem;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+class CBHT<K extends Comparable<K>, E> {
+    private SLLNode<MapEntry<K, E>>[] buckets;
+
+    @SuppressWarnings("unchecked")
+    public CBHT(int m) {
+        buckets = (SLLNode<MapEntry<K, E>>[]) new SLLNode[m];
+    }
+
+    private int hash(K key) {
+        return Math.abs(key.hashCode()) % buckets.length;
+    }
+
+    public SLLNode<MapEntry<K, E>> search(K targetKey) {
+        int b = hash(targetKey);
+        SLLNode<MapEntry<K, E>> currNode = buckets[b];
+        while (currNode != null) {
+            if (currNode.element.key.equals(targetKey)) return currNode;
+            currNode = currNode.succ;
+        }
+        return null;
+    }
+
+    public void insert(K key, E val) {
+        int b = hash(key);
+        buckets[b] = new SLLNode<>(new MapEntry<>(key, val), buckets[b]);
+    }
+
+    public SLLNode<MapEntry<K, E>>[] getBuckets() {
+        return buckets;
+    }
+}
+
+class MapEntry<K extends Comparable<K>, E> {
+    K key;
+    E value;
+
+    public MapEntry(K key, E val) {
+        this.key = key;
+        this.value = val;
+    }
+
+    public String toString() {
+        return key + " = " + value;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        scanner.nextLine();
+        CBHT<String, String> hash = new CBHT<>(n * 2);
+
+        for (int i = 0; i < n; i++) {
+            String name = scanner.next();
+            String birthday = scanner.next();
+            hash.insert(name, birthday);
+        }
+
+        int month = scanner.nextInt();
+        scanner.nextLine();
+
+        // Чување резултати без дупликати
+        List<String> results = new ArrayList<>();
+
+        for (int i = 0; i < hash.getBuckets().length; i++) {
+            SLLNode<MapEntry<String, String>> curr = hash.getBuckets()[i];
+            while (curr != null) {
+                int birthdayMonth = Integer.parseInt(curr.element.value.split("\\.")[1]);
+                if (birthdayMonth == month) {
+                    String personName = curr.element.key;
+                    if (!results.contains(personName)) {
+                        results.add(personName);
+                    }
+                }
+                curr = curr.succ;
+            }
+        }
+
+        // Сортирај резултати
+        Collections.sort(results);
+
+        // Печати ги резултатите
+        for (String name : results) {
+            System.out.println(name);
+        }
+    }
+}
