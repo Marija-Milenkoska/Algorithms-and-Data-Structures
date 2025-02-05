@@ -10,12 +10,44 @@
 
 //ask node_index - Треба да одговорите колку листови има во поддрвото на јазелот со индекс node_index
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.*;
 
- class SLLTree<E> implements Tree<E> {
+
+interface Tree<E> {
+    // //////////Accessors ////////////
+
+    public Tree.Node<E> root();
+
+    public Tree.Node<E> parent(Tree.Node<E> node);
+
+    public int childCount(Tree.Node<E> node);
+
+    // //////////Transformers ////////////
+    public void makeRoot(E elem);
+
+    public Tree.Node<E> addChild(Tree.Node<E> node, E elem);
+
+    public void remove(Tree.Node<E> node);
+
+    // //////////Iterator ////////////
+    public Iterator<E> children(Tree.Node<E> node);
+
+    // //////Inner interface for tree nodes ////////
+    public interface Node<E> {
+
+        public E getElement();
+
+        public void setElement(E elem);
+
+    }
+}
+
+
+class SLLTree<E> implements Tree<E> {
 
     // SLLNode is the implementation of the Node interface
     class SLLNode<P> implements Node<P> {
@@ -167,91 +199,62 @@ import java.util.*;
         }
         return t;
     }
-    public int countLeaves(Node<E> node){
-        SLLNode<E> currentNode = (SLLNode<E>) node;
-        if(currentNode == null){
+}
+public class Main {
+
+    @SuppressWarnings("unchecked")
+
+    static int countLeaves(Tree.Node<String> node) {
+        SLLTree<String>.SLLNode<String> current = (SLLTree<String>.SLLNode<String>) node;
+
+        if(current == null){
             return 0;
         }
-        if(currentNode.firstChild == null){
+        if(current.firstChild == null){
             return 1;
         }
-        int leafCount = 0;
-        SLLNode<E> child = currentNode.firstChild;
+        int count = 0;
+        SLLTree<String>.SLLNode<String> child = current.firstChild;
         while(child != null){
-            leafCount += countLeaves(child);
+            count += countLeaves(child);
             child = child.sibling;
         }
-        return leafCount;
-    }
-
-}
-
-
-
-interface Tree<E> {
-    // //////////Accessors ////////////
-
-    public Tree.Node<E> root();
-
-    public Tree.Node<E> parent(Tree.Node<E> node);
-
-    public int childCount(Tree.Node<E> node);
-
-    // //////////Transformers ////////////
-    public void makeRoot(E elem);
-
-    public Tree.Node<E> addChild(Tree.Node<E> node, E elem);
-
-    public void remove(Tree.Node<E> node);
-
-    // //////////Iterator ////////////
-    public Iterator<E> children(Tree.Node<E> node);
-
-    // //////Inner interface for tree nodes ////////
-    public interface Node<E> {
-
-        public E getElement();
-
-        public void setElement(E elem);
+        return count;
 
     }
-}
 
-public class Main {
+
+
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        SLLTree<String> tree = new SLLTree<>();
-        Map<String, Tree.Node<String>> nodes = new HashMap<>();
         int n = scanner.nextInt();
         int q = scanner.nextInt();
         scanner.nextLine();
-        String valueRoot = scanner.nextLine().split(" ")[1];
-        tree.makeRoot(valueRoot);
-        Tree.Node<String> nodeRoot = tree.root;
-        nodes.put(valueRoot, nodeRoot);
-        for(int i=0; i<n+q-1; i++){
-            String command = scanner.next();
-            if(command.equals("add")){
-                String parentValue = scanner.next();
-                String childValue = scanner.next();
-                scanner.nextLine();
-                Tree.Node<String> nodeParent = nodes.get(parentValue);
-                Tree.Node<String> nodeChild = tree.addChild(nodeParent, childValue);
-                nodes.put(childValue, nodeChild);
+        SLLTree<String> tree = new SLLTree<>();
+        Map<String, Tree.Node<String>> nodes = new HashMap<>();
+        String line = scanner.nextLine();
+        String rootValue = line.split(" ")[1];
+        tree.makeRoot(rootValue);
+        Tree.Node<String> rootNode = tree.root;
+        nodes.put(rootValue, rootNode);
+
+        for(int i=1; i<n+q; i++){
+            String input = scanner.nextLine();
+            String word = input.split(" ")[0];
+            if(word.equals("add")){
+                String parentValue = input.split(" ")[1];
+                String childValue = input.split(" ")[2];
+                Tree.Node<String> parentNode = nodes.get(parentValue);
+                Tree.Node<String> childNode = tree.addChild(parentNode, childValue);
+                nodes.put(childValue, childNode);
             }
-            else if(command.equals("ask")){
-                String nodeValue = scanner.next();
-                scanner.nextLine();
-                Tree.Node<String> node = nodes.get(nodeValue);
-                if(node!=null){
-                    int leafCount = tree.countLeaves(node);
-                    System.out.println(leafCount);
-                }
-                else{
-                    System.out.println(0);
-                }
+            if(word.equals("ask")){
+                String valueNode = input.split(" ")[1];
+                Tree.Node<String> whatNode = nodes.get(valueNode);
+                System.out.println(countLeaves(whatNode));
+
             }
         }
-
     }
 }
