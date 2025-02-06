@@ -1,0 +1,113 @@
+//Во оваа задача ќе работите со два објекти „Вработени“ и „Проекти“.
+
+//Еден вработен е дефиниран со 2 вредности: Име (String), Возраст (цел број).
+
+//Еден проект е дефиниран со 2 вредности: Работно Време (цел број), Плата по час (цел број).
+
+//За даден проект вкупната плата се пресметува како производ на работното време и платата по час.
+
+//Вработените ќе добиваат понудени проекти, и треба да го изберат проектот од кој ќе добијат најголема плата (доколку имаат избор од повеќе проекти со иста најголема плата, тогаш првиот таков).
+
+//Ваша задача ќе биде да им помогнете на вработените со тоа што ќе искористите CBHT со 10 кофички каде што за секој вработен ќе ја чувате неговата најдобра понуда.
+
+//За хеш функција користете производ од возраста на вработениот и ASCII вредноста на првата буква од името на вработениот.
+
+// Следните класи веќе се импортирани, не е дозволено копирање на класи овде, директно користејте ги како кога се достапни во други локални фајлови:
+// The following classes are already imported, copying classes here is not allowed, use them directly as when they are available in other local files:
+
+// CBHT, OBHT, MapEntry, SLLNode веќе се импортирани
+// CBHT, OBHT, MapEntry, SLLNode are already imported
+import java.util.Scanner;
+import java.util.Objects;
+
+
+class Person{
+    String name;
+    int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("<" + name + ", " + age + ">");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return age == person.age && name.equals(person.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return age * Character.toUpperCase(name.charAt(0));
+    }
+
+}
+class Project{
+    int time;
+    int rate;
+
+    public Project(int time, int rate) {
+        this.time = time;
+        this.rate = rate;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("<" + time + ", " + rate + ">");
+    }
+
+    int wholePay(){
+        return  rate * time;
+    }
+}
+
+public class Solution{
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        scanner.nextLine();
+        CBHT<Person, Project> hash = new CBHT<>(10);
+        for(int i=0; i<n; i++){
+            String name = scanner.next();
+            int age = scanner.nextInt();
+            int time = scanner.nextInt();
+            int rate = scanner.nextInt();
+            scanner.nextLine();
+            Person person = new Person(name, age);
+            Project project = new Project(time, rate);
+            SLLNode<MapEntry<Person, Project>> exists = hash.search(person);
+            if(exists==null){
+                hash.insert(person, project);
+            }
+            else{
+                if(exists.element.value.wholePay() < project.wholePay()){
+                    hash.insert(person, project);
+                }
+            }
+        }
+        System.out.println(hash);
+    }
+}
